@@ -17,6 +17,7 @@ export function App() {
   const [region, setRegion] = useState('en');
   const [seed, setSeed] = useState('42');
   const [likes, setLikes] = useState(3.5);
+  const [displayLikes, setDisplayLikes] = useState(3.5);
   const [viewMode, setViewMode] = useState<'table' | 'gallery'>('table');
   const [page, setPage] = useState(1);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -133,8 +134,18 @@ export function App() {
             </div>
 
             <div className="flex flex-col flex-1 min-w-[200px]">
-              <label className="text-xs text-slate-400 mb-1 font-bold">AVG LIKES: {likes}</label>
-              <input type="range" min="0" max="10" step="0.1" value={likes} onChange={(e) => handleParamChange(() => setLikes(parseFloat(e.target.value)))} className="w-full accent-teal-400" />
+              <label className="text-xs text-slate-400 mb-1 font-bold">AVG LIKES: {displayLikes}</label>
+              <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={displayLikes}
+                  onChange={(e) => setDisplayLikes(parseFloat(e.target.value))}
+                  onMouseUp={() => handleParamChange(() => setLikes(displayLikes))}
+                  onTouchEnd={() => handleParamChange(() => setLikes(displayLikes))}
+                  className="w-full accent-teal-400"
+              />
             </div>
 
             <div className="flex bg-slate-700 p-1 rounded-lg border border-slate-600">

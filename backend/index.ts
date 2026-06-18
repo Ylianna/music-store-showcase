@@ -105,7 +105,9 @@ function generateMusicData(prng: () => number) {
 app.get('/api/songs', (req, res) => {
     const userSeed = (req.query.seed as string) || 'default';
     const page = parseInt(req.query.page as string) || 1;
-    const avgLikes = parseFloat(req.query.likes as string) || 0;
+    const rawLikes = parseFloat(req.query.likes as string) || 0;
+    const avgLikes = Math.round(rawLikes * 10) / 10;
+
     const region = (req.query.region as string) || 'en';
     const limit = 20;
 
