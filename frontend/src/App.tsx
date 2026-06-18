@@ -34,7 +34,9 @@ export function App() {
 
   const fetchSongs = async (currentPage: number, append = false) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/songs?seed=${seed}&page=${currentPage}&likes=${likes}&region=${region}`);
+      const apiUrl = 'https://music-store-showcase-27eu.onrender.com';
+
+      const res = await fetch(`${apiUrl}/api/songs?seed=${seed}&page=${currentPage}&likes=${likes}&region=${region}`);
       const data = await res.json();
       setSongs(prev => append ? [...prev, ...data.songs] : data.songs);
     } catch (e) {

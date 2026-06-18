@@ -7,7 +7,7 @@ import { createCanvas } from 'canvas';
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://music-store-showcase.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -152,6 +152,5 @@ app.get('/api/songs', (req, res) => {
     res.json({ page, songs });
 });
 
-// Изменяем значение константы в самом низу файла backend/index.ts
 const PORT = 5001;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
