@@ -36,8 +36,10 @@ export function App() {
     try {
       const apiUrl = 'https://music-store-showcase-27eu.onrender.com';
 
-      const res = await fetch(`${apiUrl}/api/songs?seed=${seed}&page=${currentPage}&likes=${likes}&region=${region}`);
-      const data = await res.json();
+      const res = await fetch(
+          `${apiUrl}/api/songs?seed=${seed}&page=${currentPage}&likes=${likes}&region=${region}`,
+          { cache: 'no-store' }
+      );      const data = await res.json();
       setSongs(prev => append ? [...prev, ...data.songs] : data.songs);
     } catch (e) {
       console.error(e);
