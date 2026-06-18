@@ -132,7 +132,9 @@ app.get('/api/songs', (req, res) => {
         if (fractionalPart > 0 && likesPrng() < fractionalPart) {
             finalLikes += 1;
         }
-
+        if (avgLikes === 0) {
+            finalLikes = 0;
+        }
         const coverUrl = generateCover(title, artist, corePrng);
         const audioData = generateMusicData(corePrng);
 
