@@ -49,30 +49,84 @@ function generateCover(title: string, artist: string, prng: () => number): strin
     const canvas = createCanvas(300, 300);
     const ctx = canvas.getContext('2d');
 
-    const colors = ['#ff0055', '#00ffcc', '#ffcc00', '#9900ff', '#ff5722', '#3f51b5'];
+    const palettes = [
+        ['#1e1e24', '#92140c', '#fff8f0', '#ffcf56'],
+        ['#0d1b2a', '#415a77', '#778da9', '#e0e1dd'],
+        ['#2b2d42', '#8d99ae', '#ef233c', '#d90429'],
+        ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec']
+    ];
+    const palette = palettes[Math.floor(prng() * palettes.length)] || ['#1a1a1a', '#ffffff', '#333333', '#666666'];
+    const bg = palette[0]!;
+    const accent1 = palette[1]!;
+    const accent2 = palette[2]!;
+    const textColor = palette[3]!;
 
-    const c1 = colors[Math.floor(prng() * colors.length)] ?? '#ff0055';
-    const c2 = colors[Math.floor(prng() * colors.length)] ?? '#3f51b5';
-
-    const gradient = ctx.createLinearGradient(0, 0, 300, 300);
-    gradient.addColorStop(0, c1);
-    gradient.addColorStop(1, c2);
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 300, 300);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    for (let i = 0; i < 3; i++) {
+    const styleVersion = Math.floor(prng() * 3);
+
+    if (styleVersion === 0) {
+        ctx.strokeStyle = accent1;
+        ctx.lineWidth = 6;
+        for (let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            ctx.arc(150, 110, 35 + i * 25, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.fillStyle = accent2;
+        ctx.fillRect(135, 95, 30, 30);
+    }
+    else if (styleVersion === 1) {
+        ctx.fillStyle = accent1;
         ctx.beginPath();
-        ctx.arc(prng() * 300, prng() * 300, prng() * 100 + 50, 0, Math.PI * 2);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(200, 0);
+        ctx.lineTo(100, 200);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = accent2;
+        ctx.beginPath();
+        ctx.arc(220, 100, 50, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    else {
+        ctx.strokeStyle = accent2;
+        ctx.lineWidth = 1;
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        for (let x = 0; x < 300; x += 30) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 210); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, x); ctx.lineTo(300, x); ctx.stroke();
+        }
+        ctx.restore();
+
+        ctx.fillStyle = accent1;
+        ctx.beginPath();
+        ctx.moveTo(150, 40);
+        ctx.lineTo(230, 120);
+        ctx.lineTo(150, 200);
+        ctx.lineTo(70, 120);
+        ctx.closePath();
         ctx.fill();
     }
 
+    ctx.fillStyle = '#0f1115';
+    ctx.fillRect(0, 210, 300, 90);
+
+    ctx.fillStyle = accent1;
+    ctx.fillRect(0, 210, 8, 90);
+
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 20px Sans-serif';
-    ctx.fillText(title.substring(0, 22), 20, 240);
-    ctx.font = '14px Sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText(artist.substring(0, 28), 20, 265);
+    ctx.font = 'bold 16px sans-serif';
+    const cleanTitle = title.length > 25 ? title.substring(0, 23) + '...' : title;
+    ctx.fillText(cleanTitle, 24, 248);
+
+    ctx.font = '13px sans-serif';
+    ctx.fillStyle = textColor;
+    const cleanArtist = artist.length > 30 ? artist.substring(0, 28) + '...' : artist;
+    ctx.fillText(cleanArtist, 24, 276);
 
     return canvas.toDataURL();
 }

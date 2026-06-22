@@ -9,38 +9,49 @@ interface Song {
   genre: string;
   likes: number;
   coverUrl: string;
-  audioData: { tempo: number; key: string; notes: { note: string; duration: string }[] };
+  audioData: {
+    tempo: number;
+    key: string;
+    notes: { note: string; duration: string }[]
+  };
   review: string;
 }
 
 export function App() {
-  const [region, setRegion] = useState('en');
-  const [seed, setSeed] = useState('42');
-  const [likes, setLikes] = useState(3.5);
-  const [displayLikes, setDisplayLikes] = useState(3.5);
+  const [region, setRegion] = useState<string>('en');
+  const [seed, setSeed] = useState<string>('42');
+  const [likes, setLikes] = useState<number>(3.5);
+  const [displayLikes, setDisplayLikes] = useState<number>(3.5);
   const [viewMode, setViewMode] = useState<'table' | 'gallery'>('table');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const [songs, setSongs] = useState<Song[]>([]);
   const [expandedSong, setExpandedSong] = useState<number | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
-
-  const handleParamChange = (updater: () => void) => {
+  const handleParamChange = (updater: () => void): void => {
     updater();
     setPage(1);
     setExpandedSong(null);
     if (viewMode === 'gallery') window.scrollTo({ top: 0 });
   };
 
-  const fetchSongs = async (currentPage: number, append = false) => {
+  const handleViewModeChange = (mode: 'table' | 'gallery'): void => {
+    setViewMode(mode);
+    setPage(1);
+    setSongs([]);
+    setExpandedSong(null);
+    window.scrollTo({ top: 0 });
+  };
+
+  const fetchSongs = async (currentPage: number, append: boolean = false): Promise<void> => {
     try {
       const apiUrl = 'https://music-store-showcase-27eu.onrender.com';
-
       const res = await fetch(
           `${apiUrl}/api/songs?seed=${seed}&page=${currentPage}&likes=${likes}&region=${region}`,
           { cache: 'no-store' }
-      );      const data = await res.json();
+      );
+      const data = await res.json();
       setSongs(prev => append ? [...prev, ...data.songs] : data.songs);
     } catch (e) {
       console.error(e);
@@ -50,7 +61,7 @@ export function App() {
   useEffect(() => {
     if (viewMode === 'table') {
       fetchSongs(page, false);
-    } else {
+    } else if (viewMode === 'gallery' && page === 1) {
       fetchSongs(1, false);
     }
   }, [seed, likes, region, viewMode, page]);
@@ -65,13 +76,13 @@ export function App() {
           return nextPage;
         });
       }
-    }, { threshold: 1.0 });
+    }, { threshold: 0.5 });
 
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [viewMode, songs]);
+  }, [viewMode, seed, likes, region]);
 
-  const playSong = (song: Song) => {
+const playSong = (song: Song) => {
     if (playingIndex === song.index) {
       setPlayingIndex(null);
       return;
@@ -149,10 +160,10 @@ export function App() {
             </div>
 
             <div className="flex bg-slate-700 p-1 rounded-lg border border-slate-600">
-              <button onClick={() => setViewMode('table')} className={`px-3 py-1.5 rounded-md flex gap-2 items-center text-sm ${viewMode === 'table' ? 'bg-slate-600 text-white font-bold' : 'text-slate-400'}`}>
+              <button onClick={() => handleViewModeChange('table')} className={`px-3 py-1.5 rounded-md flex gap-2 items-center text-sm ${viewMode === 'table' ? 'bg-slate-600 text-white font-bold' : 'text-slate-400'}`}>
                 <Table size={16} /> Table
               </button>
-              <button onClick={() => setViewMode('gallery')} className={`px-3 py-1.5 rounded-md flex gap-2 items-center text-sm ${viewMode === 'gallery' ? 'bg-slate-600 text-white font-bold' : 'text-slate-400'}`}>
+              <button onClick={() => handleViewModeChange('gallery')} className={`px-3 py-1.5 rounded-md flex gap-2 items-center text-sm ${viewMode === 'gallery' ? 'bg-slate-600 text-white font-bold' : 'text-slate-400'}`}>
                 <LayoutGrid size={16} /> Gallery
               </button>
             </div>
